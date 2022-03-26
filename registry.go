@@ -8,6 +8,7 @@ import (
 var defaultMessageCodec = protobsoncodec.NewMessageCodec()
 
 var DefaultRegistry = bson.NewRegistryBuilder().
+	RegisterCodec(protobsoncodec.TypeTimestamp, protobsoncodec.NewTimestampCodec()).
 	RegisterHookEncoder(protobsoncodec.TypeMessage, defaultMessageCodec).
 	RegisterHookDecoder(protobsoncodec.TypeMessage, defaultMessageCodec).
 	Build()
