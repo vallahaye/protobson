@@ -5,10 +5,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var defaultMessageCodec = protobsoncodec.NewMessageCodec()
+var (
+	defaultMessageCodec   = protobsoncodec.NewMessageCodec()
+	defaultTimestampCodec = protobsoncodec.NewTimestampCodec()
+)
 
 var DefaultRegistry = bson.NewRegistryBuilder().
-	RegisterCodec(protobsoncodec.TypeTimestamp, protobsoncodec.NewTimestampCodec()).
+	RegisterCodec(protobsoncodec.TypeTimestamp, defaultTimestampCodec).
 	RegisterHookEncoder(protobsoncodec.TypeMessage, defaultMessageCodec).
 	RegisterHookDecoder(protobsoncodec.TypeMessage, defaultMessageCodec).
 	Build()

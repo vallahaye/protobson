@@ -1,8 +1,6 @@
 package protobsonoptions
 
-import (
-	"go.mongodb.org/mongo-driver/bson/bsonoptions"
-)
+import "go.mongodb.org/mongo-driver/bson/bsonoptions"
 
 var defaultUseProtoNames = false
 
