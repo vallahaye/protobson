@@ -10,6 +10,8 @@ var (
 	defaultTimestampCodec = protobsoncodec.NewTimestampCodec()
 )
 
+// DefaultRegistry is the default bsoncodec.Registry with all default protobson
+// codecs registered.
 var DefaultRegistry = bson.NewRegistryBuilder().
 	RegisterCodec(protobsoncodec.TypeTimestamp, defaultTimestampCodec).
 	RegisterHookEncoder(protobsoncodec.TypeMessage, defaultMessageCodec).

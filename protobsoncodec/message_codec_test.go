@@ -115,103 +115,103 @@ func TestStructTagParsers(t *testing.T) {
 			JSONPBFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback no bson tag",
+			"ProtoNamesFallback no bson tag",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag("bar"),
 			},
 			bsoncodec.StructTags{Name: "bar"},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback empty",
+			"ProtoNamesFallback empty",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(""),
 			},
 			bsoncodec.StructTags{Name: "foo"},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback tag only dash",
+			"ProtoNamesFallback tag only dash",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag("-"),
 			},
 			bsoncodec.StructTags{Skip: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback bson tag only dash",
+			"ProtoNamesFallback bson tag only dash",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`bson:"-"`),
 			},
 			bsoncodec.StructTags{Skip: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback all options",
+			"ProtoNamesFallback all options",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`bar,omitempty,minsize,truncate,inline`),
 			},
 			bsoncodec.StructTags{Name: "bar", OmitEmpty: true, MinSize: true, Truncate: true, Inline: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback all options default name",
+			"ProtoNamesFallback all options default name",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`,omitempty,minsize,truncate,inline`),
 			},
 			bsoncodec.StructTags{Name: "foo", OmitEmpty: true, MinSize: true, Truncate: true, Inline: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback bson tag all options",
+			"ProtoNamesFallback bson tag all options",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`bson:"bar,omitempty,minsize,truncate,inline"`),
 			},
 			bsoncodec.StructTags{Name: "bar", OmitEmpty: true, MinSize: true, Truncate: true, Inline: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback bson tag all options default name",
+			"ProtoNamesFallback bson tag all options default name",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`bson:",omitempty,minsize,truncate,inline"`),
 			},
 			bsoncodec.StructTags{Name: "foo", OmitEmpty: true, MinSize: true, Truncate: true, Inline: true},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback ignore xml",
+			"ProtoNamesFallback ignore xml",
 			reflect.StructField{
 				Name: "Foo",
 				Tag:  reflect.StructTag(`xml:"bar"`),
 			},
 			bsoncodec.StructTags{Name: "foo"},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback protobuf tag json name",
+			"ProtoNamesFallback protobuf tag json name",
 			reflect.StructField{
 				Name: "FooBar",
 				Tag:  reflect.StructTag(`protobuf:"bytes,1,opt,name=foo_bar,json=fooBar,proto3"`),
 			},
 			bsoncodec.StructTags{Name: "foo_bar"},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 		{
-			"ProtoNameFallback protobuf tag proto name",
+			"ProtoNamesFallback protobuf tag proto name",
 			reflect.StructField{
 				Name: "FooBar",
 				Tag:  reflect.StructTag(`protobuf:"bytes,1,opt,name=foo_bar,proto3"`),
 			},
 			bsoncodec.StructTags{Name: "foo_bar"},
-			ProtoNameFallbackStructTagParser,
+			ProtoNamesFallbackStructTagParser,
 		},
 	} {
 		t.Run(params.name, func(t *testing.T) {

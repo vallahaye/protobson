@@ -11,10 +11,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Timestamp type.
 var TypeTimestamp = reflect.TypeOf((*timestamppb.Timestamp)(nil))
 
+// TimestampCodec is the Codec used for *timestamppb.Timestamp values.
 type TimestampCodec struct{}
 
+// EncodeValue is the ValueEncoderFunc for *timestamppb.Timestamp.
 func (tsc *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeTimestamp {
 		return bsoncodec.ValueEncoderError{
@@ -27,6 +30,7 @@ func (tsc *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 	return vw.WriteTimestamp(uint32(ts.GetSeconds()), uint32(ts.GetNanos()))
 }
 
+// DecodeValue is the ValueDecoderFunc for *timestamppb.Timestamp.
 func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeTimestamp {
 		return bsoncodec.ValueDecoderError{
@@ -88,6 +92,7 @@ func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 	return nil
 }
 
+// NewTimestampCodec returns a TimestampCodec.
 func NewTimestampCodec() *TimestampCodec {
 	return &TimestampCodec{}
 }
