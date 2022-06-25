@@ -44,12 +44,6 @@ func TestBoolValueCodec(t *testing.T) {
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Null,
-				},
-				nil,
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Boolean,
 					Return:   true,
 				},
@@ -61,6 +55,18 @@ func TestBoolValueCodec(t *testing.T) {
 					Return:   "true",
 				},
 				wrapperspb.Bool(true),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Null,
+				},
+				nil,
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Undefined,
+				},
+				&wrapperspb.BoolValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {

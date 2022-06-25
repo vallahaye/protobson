@@ -44,12 +44,6 @@ func TestInt64ValueCodec(t *testing.T) {
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Null,
-				},
-				nil,
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Int64,
 					Return:   int64(42),
 				},
@@ -68,6 +62,18 @@ func TestInt64ValueCodec(t *testing.T) {
 					Return:   "42",
 				},
 				wrapperspb.Int64(42),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Null,
+				},
+				nil,
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Undefined,
+				},
+				&wrapperspb.Int64Value{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {

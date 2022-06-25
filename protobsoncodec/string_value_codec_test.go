@@ -45,12 +45,6 @@ func TestStringValueCodec(t *testing.T) {
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Null,
-				},
-				nil,
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
 					Return:   "Hello, World!",
 				},
@@ -65,6 +59,18 @@ func TestStringValueCodec(t *testing.T) {
 					},
 				},
 				wrapperspb.String("Hello, World!"),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Null,
+				},
+				nil,
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Undefined,
+				},
+				&wrapperspb.StringValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {

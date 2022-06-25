@@ -44,12 +44,6 @@ func TestFloatValueCodec(t *testing.T) {
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Null,
-				},
-				nil,
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Double,
 					Return:   float64(3.1415926535),
 				},
@@ -61,6 +55,18 @@ func TestFloatValueCodec(t *testing.T) {
 					Return:   "3.1415926535",
 				},
 				wrapperspb.Float(3.1415926535),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Null,
+				},
+				nil,
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Undefined,
+				},
+				&wrapperspb.FloatValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {

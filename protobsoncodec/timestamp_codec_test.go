@@ -92,14 +92,12 @@ func TestTimestampCodec(t *testing.T) {
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Null,
-					Return:   nil,
 				},
 				nil,
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
-					Return:   nil,
 				},
 				&timestamppb.Timestamp{},
 			},

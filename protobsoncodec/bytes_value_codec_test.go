@@ -45,12 +45,6 @@ func TestBytesValueCodec(t *testing.T) {
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Null,
-				},
-				nil,
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Binary,
 					Return: bsoncore.Value{
 						Type: bsontype.Binary,
@@ -65,6 +59,18 @@ func TestBytesValueCodec(t *testing.T) {
 					Return:   "Hello, World!",
 				},
 				wrapperspb.Bytes([]byte("Hello, World!")),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Null,
+				},
+				nil,
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Undefined,
+				},
+				&wrapperspb.BytesValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
