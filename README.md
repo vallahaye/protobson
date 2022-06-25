@@ -9,7 +9,16 @@ This library provides add-ons to [go.mongodb.org/mongo-driver](https://pkg.go.de
 | Protobuf  | MongoDB    |
 |-----------|------------|
 | [`message`](https://pkg.go.dev/google.golang.org/protobuf/proto#Message) | [Document](https://www.mongodb.com/docs/manual/core/document/) |
-| [`google.protobuf.Timestamp`](https://pkg.go.dev/google.golang.org/protobuf/types/known/timestamppb) | [Timestamp](https://www.mongodb.com/docs/manual/reference/bson-types/#timestamps) |
+| [`google.protobuf.Timestamp`](https://pkg.go.dev/google.golang.org/protobuf/types/known/timestamppb#Timestamp) | [Timestamp](https://www.mongodb.com/docs/manual/reference/bson-types/#timestamps) |
+| [`google.protobuf.BoolValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#BoolValue) | [Boolean](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.BytesValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#BytesValue) | [Binary](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.DoubleValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#DoubleValue) | [Double](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.FloatValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#FloatValue) | [Double](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.Int32Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#Int32Value) | [32-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.Int64Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#Int64Value) | [64-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.StringValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#StringValue) | [String](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.UInt32Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#UInt32Value) | [32-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.protobuf.UInt64Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#UInt64Value) | [64-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
 
 This list will grow as we add support for most [Well-Known Types](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf) as well as [Google APIs Common Types](https://github.com/googleapis/api-common-protos).
 
