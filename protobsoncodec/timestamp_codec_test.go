@@ -18,17 +18,24 @@ func TestTimestampCodec(t *testing.T) {
 	now := time.Now().Truncate(time.Millisecond)
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
+			ts   *timestamppb.Timestamp
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
 			{
+				nil,
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Null},
+				bsonrwtest.WriteNull,
+			},
+			{
+				timestamppb.New(now),
 				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Timestamp},
 				bsonrwtest.WriteTimestamp,
 			},
 		} {
 			t.Run(params.vw.Type().String(), func(t *testing.T) {
 				tsc := NewTimestampCodec()
-				v := reflect.ValueOf(timestamppb.New(now))
+				v := reflect.ValueOf(params.ts)
 				err := tsc.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 				assert.NilError(t, err)
 				assert.DeepEqual(t, params.want, params.vw.Invoked)
@@ -87,7 +94,7 @@ func TestTimestampCodec(t *testing.T) {
 					BSONType: bsontype.Null,
 					Return:   nil,
 				},
-				&timestamppb.Timestamp{},
+				nil,
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
