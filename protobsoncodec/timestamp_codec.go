@@ -27,7 +27,10 @@ func (tsc *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 		}
 	}
 	ts := v.Interface().(*timestamppb.Timestamp)
-	return vw.WriteTimestamp(uint32(ts.GetSeconds()), uint32(ts.GetNanos()))
+	if ts == nil {
+		return vw.WriteNull()
+	}
+	return vw.WriteTimestamp(uint32(ts.Seconds), uint32(ts.Nanos))
 }
 
 // DecodeValue is the ValueDecoderFunc for *timestamppb.Timestamp.
@@ -81,6 +84,7 @@ func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadNull(); err != nil {
 			return err
 		}
+		ts = nil
 	case bsontype.Undefined:
 		if err := vr.ReadUndefined(); err != nil {
 			return err
