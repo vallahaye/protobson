@@ -18,7 +18,7 @@ var TypeTimestamp = reflect.TypeOf((*timestamppb.Timestamp)(nil))
 type TimestampCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *timestamppb.Timestamp.
-func (tsc *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeTimestamp {
 		return bsoncodec.ValueEncoderError{
 			Name:     "TimestampCodec.EncodeValue",
@@ -30,11 +30,11 @@ func (tsc *TimestampCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 	if ts == nil {
 		return vw.WriteNull()
 	}
-	return vw.WriteTimestamp(uint32(ts.Seconds), uint32(ts.Nanos))
+	return vw.WriteDateTime(ts.AsTime().UnixMilli())
 }
 
 // DecodeValue is the ValueDecoderFunc for *timestamppb.Timestamp.
-func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeTimestamp {
 		return bsoncodec.ValueDecoderError{
 			Name:     "TimestampCodec.DecodeValue",
@@ -42,34 +42,20 @@ func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 			Received: v,
 		}
 	}
-	ts := &timestamppb.Timestamp{}
-	switch typ := vr.Type(); typ {
-	case bsontype.Timestamp:
-		t, i, err := vr.ReadTimestamp()
-		if err != nil {
-			return err
-		}
-		ts.Seconds = int64(t)
-		ts.Nanos = int32(i)
+	var ts *timestamppb.Timestamp
+	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.DateTime:
-		dt, err := vr.ReadDateTime()
+		msec, err := vr.ReadDateTime()
 		if err != nil {
 			return err
 		}
-		ts.Seconds = dt / 1000
-		ts.Nanos = int32(dt % 1000 * 1000000)
+		ts = timestamppb.New(time.UnixMilli(msec))
 	case bsontype.Int64:
-		sec, err := vr.ReadInt64()
+		msec, err := vr.ReadInt64()
 		if err != nil {
 			return err
 		}
-		ts.Seconds = sec
-	case bsontype.Int32:
-		sec, err := vr.ReadInt32()
-		if err != nil {
-			return err
-		}
-		ts.Seconds = int64(sec)
+		ts = timestamppb.New(time.UnixMilli(msec))
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -89,8 +75,9 @@ func (tsc *TimestampCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		ts = &timestamppb.Timestamp{}
 	default:
-		return fmt.Errorf("cannot decode %v into a *timestamppb.Timestamp", typ)
+		return fmt.Errorf("cannot decode %v into a *timestamppb.Timestamp", bsonTyp)
 	}
 	v.Set(reflect.ValueOf(ts))
 	return nil
