@@ -9,6 +9,7 @@ var (
 	defaultBoolValueCodec   = protobsoncodec.NewBoolValueCodec()
 	defaultBytesValueCodec  = protobsoncodec.NewBytesValueCodec()
 	defaultDoubleValueCodec = protobsoncodec.NewDoubleValueCodec()
+	defaultDurationCodec    = protobsoncodec.NewDurationCodec()
 	defaultFloatValueCodec  = protobsoncodec.NewFloatValueCodec()
 	defaultInt32ValueCodec  = protobsoncodec.NewInt32ValueCodec()
 	defaultInt64ValueCodec  = protobsoncodec.NewInt64ValueCodec()
@@ -25,6 +26,7 @@ var DefaultRegistry = bson.NewRegistryBuilder().
 	RegisterCodec(protobsoncodec.TypeBoolValue, defaultBoolValueCodec).
 	RegisterCodec(protobsoncodec.TypeBytesValue, defaultBytesValueCodec).
 	RegisterCodec(protobsoncodec.TypeDoubleValue, defaultDoubleValueCodec).
+	RegisterCodec(protobsoncodec.TypeDuration, defaultDurationCodec).
 	RegisterCodec(protobsoncodec.TypeFloatValue, defaultFloatValueCodec).
 	RegisterCodec(protobsoncodec.TypeInt32Value, defaultInt32ValueCodec).
 	RegisterCodec(protobsoncodec.TypeInt64Value, defaultInt64ValueCodec).
