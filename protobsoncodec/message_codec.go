@@ -19,7 +19,7 @@ type MessageCodec struct {
 }
 
 // EncodeValue is the ValueEncoderFunc for proto.Message.
-func (mc *MessageCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *MessageCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || (!v.Type().Implements(TypeMessage) && !reflect.PtrTo(v.Type()).Implements(TypeMessage)) {
 		return bsoncodec.ValueEncoderError{
 			Name:     "MessageCodec.EncodeValue",
@@ -27,11 +27,11 @@ func (mc *MessageCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueW
 			Received: v,
 		}
 	}
-	return mc.StructCodec.EncodeValue(ec, vw, v.Elem())
+	return c.StructCodec.EncodeValue(ec, vw, v.Elem())
 }
 
 // DecodeValue is the ValueDecoderFunc for proto.Message.
-func (mc *MessageCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *MessageCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || (!v.Type().Implements(TypeMessage) && !reflect.PtrTo(v.Type()).Implements(TypeMessage)) {
 		return bsoncodec.ValueDecoderError{
 			Name:     "MessageCodec.DecodeValue",
@@ -39,7 +39,7 @@ func (mc *MessageCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueR
 			Received: v,
 		}
 	}
-	return mc.StructCodec.DecodeValue(dc, vr, v.Elem())
+	return c.StructCodec.DecodeValue(dc, vr, v.Elem())
 }
 
 // NewMessageCodec returns a MessageCodec with options opts.
@@ -49,8 +49,8 @@ func NewMessageCodec(opts ...*protobsonoptions.MessageCodecOptions) *MessageCode
 	if mergedOpts.UseProtoNames != nil && *mergedOpts.UseProtoNames {
 		parser = ProtoNamesFallbackStructTagParser
 	}
-	sc, _ := bsoncodec.NewStructCodec(parser, mergedOpts.StructCodecOptions)
-	return &MessageCodec{sc}
+	structCodec, _ := bsoncodec.NewStructCodec(parser, mergedOpts.StructCodecOptions)
+	return &MessageCodec{structCodec}
 }
 
 // JSONPBFallbackStructTagParser is the StructTagParser used by the MessageCodec by default.
@@ -60,11 +60,11 @@ func NewMessageCodec(opts ...*protobsonoptions.MessageCodecOptions) *MessageCode
 //
 // An example:
 //
-//   type T struct {
-//     Name   string `protobuf:"bytes,1,opt,name=name,proto3"` // Key is "name"
-//     FooBar string `protobuf:"bytes,2,opt,name=foo_bar,json=fooBar,proto3"` // Key is "fooBar"
-//     BarFoo string `protobuf:"bytes,3,opt,name=bar_foo,json=barFoo,proto3" bson:"barfoo"` // Key is "barfoo"
-//   }
+//	type T struct {
+//	  Name   string `protobuf:"bytes,1,opt,name=name,proto3"` // Key is "name"
+//	  FooBar string `protobuf:"bytes,2,opt,name=foo_bar,json=fooBar,proto3"` // Key is "fooBar"
+//	  BarFoo string `protobuf:"bytes,3,opt,name=bar_foo,json=barFoo,proto3" bson:"barfoo"` // Key is "barfoo"
+//	}
 var JSONPBFallbackStructTagParser bsoncodec.StructTagParserFunc = func(sf reflect.StructField) (bsoncodec.StructTags, error) {
 	if _, ok := sf.Tag.Lookup("bson"); ok {
 		return bsoncodec.DefaultStructTagParser(sf)
