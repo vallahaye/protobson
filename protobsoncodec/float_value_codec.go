@@ -18,7 +18,7 @@ var TypeFloatValue = reflect.TypeOf((*wrapperspb.FloatValue)(nil))
 type FloatValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.FloatValue.
-func (vc *FloatValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *FloatValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeFloatValue {
 		return bsoncodec.ValueEncoderError{
 			Name:     "FloatValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *FloatValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.FloatValue.
-func (vc *FloatValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *FloatValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeFloatValue {
 		return bsoncodec.ValueDecoderError{
 			Name:     "FloatValueCodec.DecodeValue",
@@ -42,14 +42,14 @@ func (vc *FloatValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 			Received: v,
 		}
 	}
-	val := &wrapperspb.FloatValue{}
+	var val *wrapperspb.FloatValue
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Double:
 		v, err := vr.ReadDouble()
 		if err != nil {
 			return err
 		}
-		val.Value = float32(v)
+		val = wrapperspb.Float(float32(v))
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -59,7 +59,7 @@ func (vc *FloatValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err != nil {
 			return err
 		}
-		val.Value = float32(v)
+		val = wrapperspb.Float(float32(v))
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -69,6 +69,7 @@ func (vc *FloatValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.FloatValue{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.FloatValue", bsonTyp)
 	}

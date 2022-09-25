@@ -18,7 +18,7 @@ var TypeBoolValue = reflect.TypeOf((*wrapperspb.BoolValue)(nil))
 type BoolValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.BoolValue.
-func (vc *BoolValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *BoolValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeBoolValue {
 		return bsoncodec.ValueEncoderError{
 			Name:     "BoolValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *BoolValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Valu
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.BoolValue.
-func (vc *BoolValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *BoolValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeBoolValue {
 		return bsoncodec.ValueDecoderError{
 			Name:     "BoolValueCodec.DecodeValue",
@@ -42,14 +42,14 @@ func (vc *BoolValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Valu
 			Received: v,
 		}
 	}
-	val := &wrapperspb.BoolValue{}
+	var val *wrapperspb.BoolValue
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Boolean:
 		v, err := vr.ReadBoolean()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Bool(v)
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -59,7 +59,7 @@ func (vc *BoolValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Valu
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Bool(v)
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -69,6 +69,7 @@ func (vc *BoolValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Valu
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.BoolValue{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.BoolValue", bsonTyp)
 	}

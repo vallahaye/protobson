@@ -18,7 +18,7 @@ var TypeUInt64Value = reflect.TypeOf((*wrapperspb.UInt64Value)(nil))
 type UInt64ValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.UInt64Value.
-func (vc *UInt64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *UInt64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeUInt64Value {
 		return bsoncodec.ValueEncoderError{
 			Name:     "UInt64ValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *UInt64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Va
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.UInt64Value.
-func (vc *UInt64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *UInt64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeUInt64Value {
 		return bsoncodec.ValueDecoderError{
 			Name:     "UInt64ValueCodec.DecodeValue",
@@ -42,20 +42,20 @@ func (vc *UInt64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 			Received: v,
 		}
 	}
-	val := &wrapperspb.UInt64Value{}
+	var val *wrapperspb.UInt64Value
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Int64:
 		v, err := vr.ReadInt64()
 		if err != nil {
 			return err
 		}
-		val.Value = uint64(v)
+		val = wrapperspb.UInt64(uint64(v))
 	case bsontype.Int32:
 		v, err := vr.ReadInt32()
 		if err != nil {
 			return err
 		}
-		val.Value = uint64(v)
+		val = wrapperspb.UInt64(uint64(v))
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -65,7 +65,7 @@ func (vc *UInt64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.UInt64(v)
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -75,6 +75,7 @@ func (vc *UInt64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.UInt64Value{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.UInt64Value", bsonTyp)
 	}

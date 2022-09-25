@@ -30,9 +30,9 @@ func TestUInt64ValueCodec(t *testing.T) {
 				bsonrwtest.WriteInt64,
 			},
 		} {
-			vc := NewUInt64ValueCodec()
+			c := NewUInt64ValueCodec()
 			v := reflect.ValueOf(params.val)
-			err := vc.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
+			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 			assert.NilError(t, err)
 			assert.DeepEqual(t, params.want, params.vw.Invoked)
 		}
@@ -77,9 +77,9 @@ func TestUInt64ValueCodec(t *testing.T) {
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				vc := NewUInt64ValueCodec()
+				c := NewUInt64ValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
-				err := vc.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
+				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)
 				assert.DeepEqual(t, params.want, got.Interface(), protocmp.Transform())
 			})

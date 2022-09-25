@@ -18,7 +18,7 @@ var TypeInt64Value = reflect.TypeOf((*wrapperspb.Int64Value)(nil))
 type Int64ValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.Int64Value.
-func (vc *Int64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *Int64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeInt64Value {
 		return bsoncodec.ValueEncoderError{
 			Name:     "Int64ValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *Int64ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.Int64Value.
-func (vc *Int64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *Int64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeInt64Value {
 		return bsoncodec.ValueDecoderError{
 			Name:     "Int64ValueCodec.DecodeValue",
@@ -42,20 +42,20 @@ func (vc *Int64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 			Received: v,
 		}
 	}
-	val := &wrapperspb.Int64Value{}
+	var val *wrapperspb.Int64Value
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Int64:
 		v, err := vr.ReadInt64()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Int64(v)
 	case bsontype.Int32:
 		v, err := vr.ReadInt32()
 		if err != nil {
 			return err
 		}
-		val.Value = int64(v)
+		val = wrapperspb.Int64(int64(v))
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -65,7 +65,7 @@ func (vc *Int64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Int64(v)
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -75,6 +75,7 @@ func (vc *Int64ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.Int64Value{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.Int64Value", bsonTyp)
 	}

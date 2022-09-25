@@ -17,7 +17,7 @@ var TypeStringValue = reflect.TypeOf((*wrapperspb.StringValue)(nil))
 type StringValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.StringValue.
-func (vc *StringValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *StringValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeStringValue {
 		return bsoncodec.ValueEncoderError{
 			Name:     "StringValueCodec.EncodeValue",
@@ -33,7 +33,7 @@ func (vc *StringValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Va
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.StringValue.
-func (vc *StringValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *StringValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeStringValue {
 		return bsoncodec.ValueDecoderError{
 			Name:     "StringValueCodec.DecodeValue",
@@ -41,20 +41,20 @@ func (vc *StringValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 			Received: v,
 		}
 	}
-	val := &wrapperspb.StringValue{}
+	var val *wrapperspb.StringValue
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.String:
 		v, err := vr.ReadString()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.String(v)
 	case bsontype.Binary:
 		v, _, err := vr.ReadBinary()
 		if err != nil {
 			return err
 		}
-		val.Value = string(v)
+		val = wrapperspb.String(string(v))
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -64,6 +64,7 @@ func (vc *StringValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.StringValue{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.StringValue", bsonTyp)
 	}

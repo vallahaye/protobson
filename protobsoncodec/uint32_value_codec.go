@@ -42,14 +42,14 @@ func (vc *UInt32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 			Received: v,
 		}
 	}
-	val := &wrapperspb.UInt32Value{}
+	var val *wrapperspb.UInt32Value
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Int32:
 		v, err := vr.ReadInt32()
 		if err != nil {
 			return err
 		}
-		val.Value = uint32(v)
+		val = wrapperspb.UInt32(uint32(v))
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -59,7 +59,7 @@ func (vc *UInt32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err != nil {
 			return err
 		}
-		val.Value = uint32(v)
+		val = wrapperspb.UInt32(uint32(v))
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -69,6 +69,7 @@ func (vc *UInt32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.UInt32Value{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.UInt32Value", bsonTyp)
 	}

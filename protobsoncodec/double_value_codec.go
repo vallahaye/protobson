@@ -18,7 +18,7 @@ var TypeDoubleValue = reflect.TypeOf((*wrapperspb.DoubleValue)(nil))
 type DoubleValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.DoubleValue.
-func (vc *DoubleValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *DoubleValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeDoubleValue {
 		return bsoncodec.ValueEncoderError{
 			Name:     "DoubleValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *DoubleValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Va
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.DoubleValue.
-func (vc *DoubleValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *DoubleValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeDoubleValue {
 		return bsoncodec.ValueDecoderError{
 			Name:     "DoubleValueCodec.DecodeValue",
@@ -42,14 +42,14 @@ func (vc *DoubleValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 			Received: v,
 		}
 	}
-	val := &wrapperspb.DoubleValue{}
+	var val *wrapperspb.DoubleValue
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Double:
 		v, err := vr.ReadDouble()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Double(v)
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -59,7 +59,7 @@ func (vc *DoubleValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Double(v)
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -69,6 +69,7 @@ func (vc *DoubleValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Va
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.DoubleValue{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.DoubleValue", bsonTyp)
 	}

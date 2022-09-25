@@ -17,7 +17,7 @@ var TypeBytesValue = reflect.TypeOf((*wrapperspb.BytesValue)(nil))
 type BytesValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.BytesValue.
-func (vc *BytesValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *BytesValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeBytesValue {
 		return bsoncodec.ValueEncoderError{
 			Name:     "BytesValueCodec.EncodeValue",
@@ -33,7 +33,7 @@ func (vc *BytesValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.BytesValue.
-func (vc *BytesValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *BytesValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeBytesValue {
 		return bsoncodec.ValueDecoderError{
 			Name:     "BytesValueCodec.DecodeValue",
@@ -41,20 +41,20 @@ func (vc *BytesValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 			Received: v,
 		}
 	}
-	val := &wrapperspb.BytesValue{}
+	var val *wrapperspb.BytesValue
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Binary:
 		v, _, err := vr.ReadBinary()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Bytes(v)
 	case bsontype.String:
 		v, err := vr.ReadString()
 		if err != nil {
 			return err
 		}
-		val.Value = []byte(v)
+		val = wrapperspb.Bytes([]byte(v))
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -64,6 +64,7 @@ func (vc *BytesValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.BytesValue{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.BytesValue", bsonTyp)
 	}

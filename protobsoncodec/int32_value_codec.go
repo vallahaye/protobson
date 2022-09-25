@@ -18,7 +18,7 @@ var TypeInt32Value = reflect.TypeOf((*wrapperspb.Int32Value)(nil))
 type Int32ValueCodec struct{}
 
 // EncodeValue is the ValueEncoderFunc for *wrapperspb.Int32Value.
-func (vc *Int32ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
+func (c *Int32ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.ValueWriter, v reflect.Value) error {
 	if !v.IsValid() || v.Type() != TypeInt32Value {
 		return bsoncodec.ValueEncoderError{
 			Name:     "Int32ValueCodec.EncodeValue",
@@ -34,7 +34,7 @@ func (vc *Int32ValueCodec) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Val
 }
 
 // DecodeValue is the ValueDecoderFunc for *wrapperspb.Int32Value.
-func (vc *Int32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
+func (c *Int32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReader, v reflect.Value) error {
 	if !v.CanSet() || v.Type() != TypeInt32Value {
 		return bsoncodec.ValueDecoderError{
 			Name:     "Int32ValueCodec.DecodeValue",
@@ -42,14 +42,14 @@ func (vc *Int32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 			Received: v,
 		}
 	}
-	val := &wrapperspb.Int32Value{}
+	var val *wrapperspb.Int32Value
 	switch bsonTyp := vr.Type(); bsonTyp {
 	case bsontype.Int32:
 		v, err := vr.ReadInt32()
 		if err != nil {
 			return err
 		}
-		val.Value = v
+		val = wrapperspb.Int32(v)
 	case bsontype.String:
 		s, err := vr.ReadString()
 		if err != nil {
@@ -59,7 +59,7 @@ func (vc *Int32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err != nil {
 			return err
 		}
-		val.Value = int32(v)
+		val = wrapperspb.Int32(int32(v))
 	case bsontype.Null:
 		if err := vr.ReadNull(); err != nil {
 			return err
@@ -69,6 +69,7 @@ func (vc *Int32ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.Val
 		if err := vr.ReadUndefined(); err != nil {
 			return err
 		}
+		val = &wrapperspb.Int32Value{}
 	default:
 		return fmt.Errorf("cannot decode %v into a *wrapperspb.Int32Value", bsonTyp)
 	}
