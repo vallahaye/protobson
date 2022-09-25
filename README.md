@@ -9,7 +9,7 @@ This library provides add-ons to [go.mongodb.org/mongo-driver](https://pkg.go.de
 | Protobuf  | MongoDB    |
 |-----------|------------|
 | [`message`](https://pkg.go.dev/google.golang.org/protobuf/proto#Message) | [Document](https://www.mongodb.com/docs/manual/core/document/) |
-| [`google.protobuf.Timestamp`](https://pkg.go.dev/google.golang.org/protobuf/types/known/timestamppb#Timestamp) | [Timestamp](https://www.mongodb.com/docs/manual/reference/bson-types/#timestamps) |
+| [`google.protobuf.Timestamp`](https://pkg.go.dev/google.golang.org/protobuf/types/known/timestamppb#Timestamp) | [Date](https://www.mongodb.com/docs/manual/reference/bson-types/#date) |
 | [`google.protobuf.Duration`](https://pkg.go.dev/google.golang.org/protobuf/types/known/durationpb#Duration) | [64-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
 | [`google.protobuf.BoolValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#BoolValue) | [Boolean](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
 | [`google.protobuf.BytesValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#BytesValue) | [Binary](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
