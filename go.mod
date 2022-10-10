@@ -3,7 +3,7 @@ module go.vallahaye.net/protobson
 go 1.18
 
 require (
-	go.mongodb.org/mongo-driver v1.10.2
+	go.mongodb.org/mongo-driver v1.10.3
 	google.golang.org/protobuf v1.28.1
 	gotest.tools/v3 v3.3.0
 )
