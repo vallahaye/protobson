@@ -1,4 +1,4 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
@@ -12,10 +12,10 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestUInt64ValueCodec(t *testing.T) {
+func TestDoubleValueCodec(t *testing.T) {
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			val  *wrapperspb.UInt64Value
+			val  *wrapperspb.DoubleValue
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -25,12 +25,12 @@ func TestUInt64ValueCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				wrapperspb.UInt64(42),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int64},
-				bsonrwtest.WriteInt64,
+				wrapperspb.Double(3.1415926535),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Double},
+				bsonrwtest.WriteDouble,
 			},
 		} {
-			c := NewUInt64ValueCodec()
+			c := NewDoubleValueCodec()
 			v := reflect.ValueOf(params.val)
 			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 			assert.NilError(t, err)
@@ -40,28 +40,21 @@ func TestUInt64ValueCodec(t *testing.T) {
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *wrapperspb.UInt64Value
+			want *wrapperspb.DoubleValue
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Int64,
-					Return:   int64(42),
+					BSONType: bsontype.Double,
+					Return:   float64(3.1415926535),
 				},
-				wrapperspb.UInt64(42),
-			},
-			{
-				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Int32,
-					Return:   int32(42),
-				},
-				wrapperspb.UInt64(42),
+				wrapperspb.Double(3.1415926535),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   "42",
+					Return:   "3.1415926535",
 				},
-				wrapperspb.UInt64(42),
+				wrapperspb.Double(3.1415926535),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -73,11 +66,11 @@ func TestUInt64ValueCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&wrapperspb.UInt64Value{},
+				&wrapperspb.DoubleValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewUInt64ValueCodec()
+				c := NewDoubleValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)

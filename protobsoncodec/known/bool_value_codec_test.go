@@ -1,4 +1,4 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
@@ -12,10 +12,10 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestUInt32ValueCodec(t *testing.T) {
+func TestBoolValueCodec(t *testing.T) {
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			val  *wrapperspb.UInt32Value
+			val  *wrapperspb.BoolValue
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -25,12 +25,12 @@ func TestUInt32ValueCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				wrapperspb.UInt32(42),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int32},
-				bsonrwtest.WriteInt32,
+				wrapperspb.Bool(true),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Boolean},
+				bsonrwtest.WriteBoolean,
 			},
 		} {
-			c := NewUInt32ValueCodec()
+			c := NewBoolValueCodec()
 			v := reflect.ValueOf(params.val)
 			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 			assert.NilError(t, err)
@@ -40,21 +40,21 @@ func TestUInt32ValueCodec(t *testing.T) {
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *wrapperspb.UInt32Value
+			want *wrapperspb.BoolValue
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Int32,
-					Return:   int32(42),
+					BSONType: bsontype.Boolean,
+					Return:   true,
 				},
-				wrapperspb.UInt32(42),
+				wrapperspb.Bool(true),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   "42",
+					Return:   "true",
 				},
-				wrapperspb.UInt32(42),
+				wrapperspb.Bool(true),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -66,11 +66,11 @@ func TestUInt32ValueCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&wrapperspb.UInt32Value{},
+				&wrapperspb.BoolValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewUInt32ValueCodec()
+				c := NewBoolValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)

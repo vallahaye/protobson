@@ -1,21 +1,23 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw/bsonrwtest"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 )
 
-func TestInt32ValueCodec(t *testing.T) {
+func TestTimestampCodec(t *testing.T) {
+	now := time.Now().Truncate(time.Millisecond)
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			val  *wrapperspb.Int32Value
+			ts   *timestamppb.Timestamp
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -25,36 +27,45 @@ func TestInt32ValueCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				wrapperspb.Int32(42),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int32},
-				bsonrwtest.WriteInt32,
+				timestamppb.New(now),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.DateTime},
+				bsonrwtest.WriteDateTime,
 			},
 		} {
-			c := NewInt32ValueCodec()
-			v := reflect.ValueOf(params.val)
-			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
-			assert.NilError(t, err)
-			assert.DeepEqual(t, params.want, params.vw.Invoked)
+			t.Run(params.vw.Type().String(), func(t *testing.T) {
+				c := NewTimestampCodec()
+				v := reflect.ValueOf(params.ts)
+				err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
+				assert.NilError(t, err)
+				assert.DeepEqual(t, params.want, params.vw.Invoked)
+			})
 		}
 	})
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *wrapperspb.Int32Value
+			want *timestamppb.Timestamp
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Int32,
-					Return:   int32(42),
+					BSONType: bsontype.DateTime,
+					Return:   now.UnixMilli(),
 				},
-				wrapperspb.Int32(42),
+				timestamppb.New(now),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.Int64,
+					Return:   now.UnixMilli(),
+				},
+				timestamppb.New(now),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   "42",
+					Return:   now.Format(time.RFC3339Nano),
 				},
-				wrapperspb.Int32(42),
+				timestamppb.New(now),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -66,11 +77,11 @@ func TestInt32ValueCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&wrapperspb.Int32Value{},
+				&timestamppb.Timestamp{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewInt32ValueCodec()
+				c := NewTimestampCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)

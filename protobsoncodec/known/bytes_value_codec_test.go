@@ -1,23 +1,22 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
 	"testing"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw/bsonrwtest"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"gotest.tools/v3/assert"
 )
 
-func TestDurationCodec(t *testing.T) {
-	elapsed := time.Now().Sub(time.Date(2022, 5, 30, 11, 43, 26, 0, time.UTC))
+func TestBytesValueCodec(t *testing.T) {
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			dur  *durationpb.Duration
+			val  *wrapperspb.BytesValue
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -27,38 +26,39 @@ func TestDurationCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				durationpb.New(elapsed),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int64},
-				bsonrwtest.WriteInt64,
+				wrapperspb.Bytes([]byte("Hello, World!")),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Binary},
+				bsonrwtest.WriteBinary,
 			},
 		} {
-			t.Run(params.vw.Type().String(), func(t *testing.T) {
-				c := NewDurationCodec()
-				v := reflect.ValueOf(params.dur)
-				err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
-				assert.NilError(t, err)
-				assert.DeepEqual(t, params.want, params.vw.Invoked)
-			})
+			c := NewBytesValueCodec()
+			v := reflect.ValueOf(params.val)
+			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
+			assert.NilError(t, err)
+			assert.DeepEqual(t, params.want, params.vw.Invoked)
 		}
 	})
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *durationpb.Duration
+			want *wrapperspb.BytesValue
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Int64,
-					Return:   int64(elapsed),
+					BSONType: bsontype.Binary,
+					Return: bsoncore.Value{
+						Type: bsontype.Binary,
+						Data: bsoncore.AppendBinary(nil, 0x00, []byte("Hello, World!")),
+					},
 				},
-				durationpb.New(elapsed),
+				wrapperspb.Bytes([]byte("Hello, World!")),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   elapsed.String(),
+					Return:   "Hello, World!",
 				},
-				durationpb.New(elapsed),
+				wrapperspb.Bytes([]byte("Hello, World!")),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -70,11 +70,11 @@ func TestDurationCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&durationpb.Duration{},
+				&wrapperspb.BytesValue{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewDurationCodec()
+				c := NewBytesValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)

@@ -20,6 +20,7 @@ This library provides add-ons to [go.mongodb.org/mongo-driver](https://pkg.go.de
 | [`google.protobuf.StringValue`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#StringValue) | [String](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
 | [`google.protobuf.UInt32Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#UInt32Value) | [32-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
 | [`google.protobuf.UInt64Value`](https://pkg.go.dev/google.golang.org/protobuf/types/known/wrapperspb#UInt64Value) | [64-bit integer](https://www.mongodb.com/docs/manual/reference/bson-types/#bson-types) |
+| [`google.type.DateTime`](https://pkg.go.dev/google.golang.org/genproto/googleapis/type/datetime#DateTime) | [Date](https://www.mongodb.com/docs/manual/reference/bson-types/#date) |
 
 This list will grow as we add support for most [Well-Known Types](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf) as well as [Google APIs Common Types](https://github.com/googleapis/api-common-protos).
 

@@ -1,4 +1,4 @@
-package protobsoncodec
+package known
 
 import (
 	"fmt"

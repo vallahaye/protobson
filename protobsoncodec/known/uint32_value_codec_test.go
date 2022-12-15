@@ -1,4 +1,4 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
@@ -12,10 +12,10 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestFloatValueCodec(t *testing.T) {
+func TestUInt32ValueCodec(t *testing.T) {
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			val  *wrapperspb.FloatValue
+			val  *wrapperspb.UInt32Value
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -25,12 +25,12 @@ func TestFloatValueCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				wrapperspb.Float(3.1415926535),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Double},
-				bsonrwtest.WriteDouble,
+				wrapperspb.UInt32(42),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int32},
+				bsonrwtest.WriteInt32,
 			},
 		} {
-			c := NewFloatValueCodec()
+			c := NewUInt32ValueCodec()
 			v := reflect.ValueOf(params.val)
 			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 			assert.NilError(t, err)
@@ -40,21 +40,21 @@ func TestFloatValueCodec(t *testing.T) {
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *wrapperspb.FloatValue
+			want *wrapperspb.UInt32Value
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Double,
-					Return:   float64(3.1415926535),
+					BSONType: bsontype.Int32,
+					Return:   int32(42),
 				},
-				wrapperspb.Float(3.1415926535),
+				wrapperspb.UInt32(42),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   "3.1415926535",
+					Return:   "42",
 				},
-				wrapperspb.Float(3.1415926535),
+				wrapperspb.UInt32(42),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -66,11 +66,11 @@ func TestFloatValueCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&wrapperspb.FloatValue{},
+				&wrapperspb.UInt32Value{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewFloatValueCodec()
+				c := NewUInt32ValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)

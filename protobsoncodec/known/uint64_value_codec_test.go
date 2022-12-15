@@ -1,4 +1,4 @@
-package protobsoncodec
+package known
 
 import (
 	"reflect"
@@ -7,16 +7,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw/bsonrwtest"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
-	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"gotest.tools/v3/assert"
 )
 
-func TestStringValueCodec(t *testing.T) {
+func TestUInt64ValueCodec(t *testing.T) {
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
-			val  *wrapperspb.StringValue
+			val  *wrapperspb.UInt64Value
 			vw   *bsonrwtest.ValueReaderWriter
 			want bsonrwtest.Invoked
 		}{
@@ -26,12 +25,12 @@ func TestStringValueCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				wrapperspb.String("Hello, World!"),
-				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.String},
-				bsonrwtest.WriteString,
+				wrapperspb.UInt64(42),
+				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.Int64},
+				bsonrwtest.WriteInt64,
 			},
 		} {
-			c := NewStringValueCodec()
+			c := NewUInt64ValueCodec()
 			v := reflect.ValueOf(params.val)
 			err := c.EncodeValue(bsoncodec.EncodeContext{}, params.vw, v)
 			assert.NilError(t, err)
@@ -41,24 +40,28 @@ func TestStringValueCodec(t *testing.T) {
 	t.Run("DecodeFromBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			vr   *bsonrwtest.ValueReaderWriter
-			want *wrapperspb.StringValue
+			want *wrapperspb.UInt64Value
 		}{
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.String,
-					Return:   "Hello, World!",
+					BSONType: bsontype.Int64,
+					Return:   int64(42),
 				},
-				wrapperspb.String("Hello, World!"),
+				wrapperspb.UInt64(42),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
-					BSONType: bsontype.Binary,
-					Return: bsoncore.Value{
-						Type: bsontype.Binary,
-						Data: bsoncore.AppendBinary(nil, 0x00, []byte("Hello, World!")),
-					},
+					BSONType: bsontype.Int32,
+					Return:   int32(42),
 				},
-				wrapperspb.String("Hello, World!"),
+				wrapperspb.UInt64(42),
+			},
+			{
+				&bsonrwtest.ValueReaderWriter{
+					BSONType: bsontype.String,
+					Return:   "42",
+				},
+				wrapperspb.UInt64(42),
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
@@ -70,11 +73,11 @@ func TestStringValueCodec(t *testing.T) {
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Undefined,
 				},
-				&wrapperspb.StringValue{},
+				&wrapperspb.UInt64Value{},
 			},
 		} {
 			t.Run(params.vr.Type().String(), func(t *testing.T) {
-				c := NewStringValueCodec()
+				c := NewUInt64ValueCodec()
 				got := reflect.New(reflect.TypeOf(params.want)).Elem()
 				err := c.DecodeValue(bsoncodec.DecodeContext{}, params.vr, got)
 				assert.NilError(t, err)
