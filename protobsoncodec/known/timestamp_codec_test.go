@@ -14,7 +14,7 @@ import (
 )
 
 func TestTimestampCodec(t *testing.T) {
-	now := time.Now().Truncate(time.Millisecond)
+	ts := timestamppb.New(time.Date(2022, 5, 30, 11, 43, 26, 0, time.UTC))
 	t.Run("EncodeToBsontype", func(t *testing.T) {
 		for _, params := range []struct {
 			ts   *timestamppb.Timestamp
@@ -27,7 +27,7 @@ func TestTimestampCodec(t *testing.T) {
 				bsonrwtest.WriteNull,
 			},
 			{
-				timestamppb.New(now),
+				ts,
 				&bsonrwtest.ValueReaderWriter{BSONType: bsontype.DateTime},
 				bsonrwtest.WriteDateTime,
 			},
@@ -49,23 +49,23 @@ func TestTimestampCodec(t *testing.T) {
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.DateTime,
-					Return:   now.UnixMilli(),
+					Return:   int64(1653911006000),
 				},
-				timestamppb.New(now),
+				ts,
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.Int64,
-					Return:   now.UnixMilli(),
+					Return:   int64(1653911006000),
 				},
-				timestamppb.New(now),
+				ts,
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
 					BSONType: bsontype.String,
-					Return:   now.Format(time.RFC3339Nano),
+					Return:   "2022-05-30T11:43:26Z",
 				},
-				timestamppb.New(now),
+				ts,
 			},
 			{
 				&bsonrwtest.ValueReaderWriter{
