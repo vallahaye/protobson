@@ -6,10 +6,7 @@ require (
 	go.mongodb.org/mongo-driver v1.11.6
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37
 	google.golang.org/protobuf v1.31.0
-	gotest.tools/v3 v3.4.0
+	gotest.tools/v3 v3.5.0
 )
 
-require (
-	github.com/google/go-cmp v0.5.5 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-)
+require github.com/google/go-cmp v0.5.9 // indirect
