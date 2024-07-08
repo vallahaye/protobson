@@ -39,7 +39,7 @@ func (c *MessageCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueRe
 			Received: v,
 		}
 	}
-	return c.StructCodec.DecodeValue(dc, vr, v.Elem())
+	return c.StructCodec.DecodeValue(dc, vr, v)
 }
 
 // NewMessageCodec returns a MessageCodec with options opts.
